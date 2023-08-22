@@ -39,6 +39,21 @@ function App() {
     "New York Jets":"NYJ","Buffalo Bills":"Buf","BYE":"BYE"
   };
 
+  const calculateColorValue = point => {
+    // Calculate a normalized value between 0 and 1 based on point value
+    const minValue = -11; // Change this to your actual minimum point value
+    const maxValue = 11;
+    const normalizedValue = (point - minValue) / (maxValue - minValue);
+  
+    // Interpolate between green (0, 255, 0) and red (255, 0, 0) based on normalized value
+    const green = Math.floor(255 * (1 - normalizedValue));
+    const red = Math.floor(255 * normalizedValue);
+    const blue = 0;
+    
+    // Return the RGB color value
+    return `rgb(${red}, ${green}, ${blue})`;
+  };
+
   const [teamsOdds, setTeamsOdds] = useState({});
   const weekCount = 18;
   
@@ -110,7 +125,7 @@ function App() {
             {teamsOdds[teamName].map((odds, index) => (
             <td key={index}>
               {odds && (
-              <div className="game-box">
+              <div className="game-box" style={{ backgroundColor: calculateColorValue(odds.point) }}>
                 <p>{teamAbbreviations[odds.opponent]}</p>
                 <p>{odds.point}</p>
                 {/* Add onClick handler here */}
