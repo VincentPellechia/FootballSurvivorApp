@@ -36,15 +36,17 @@ function App() {
     "San Francisco 49ers":"SF","Indianapolis Colts":"IND","Jacksonville Jaguars":"JAX","New Orleans Saints":"NO","Tennessee Titans":"TEN",
     "Seattle Seahawks":"SEA","Los Angeles Rams":"LA","Denver Broncos":"DEN","Las Vegas Raiders":"LV","Los Angeles Chargers":"LAC",
     "Miami Dolphins":"MIA","New England Patriots":"NE","Philadelphia Eagles":"PHI","New York Giants":"NYG","Dallas Cowboys":"DAL",
-    "New York Jets":"NYJ","Buffalo Bills":"Buf"
+    "New York Jets":"NYJ","Buffalo Bills":"Buf","BYE":"BYE"
   };
 
   const [teamsOdds, setTeamsOdds] = useState({});
-  const weekCount = 17;
+  const weekCount = 18;
   
   useEffect(() => {
     if (oddsData) {
       const newTeamsOdds = {}; // Create a new object to store the teams odds
+      console.log(oddsData[0].commence_time)
+      const firstWeekTime = new Date("2023-09-07T00:21:00Z");
 
       oddsData.forEach(game => {
         const homeTeam = game.home_team;
@@ -53,17 +55,31 @@ function App() {
         newTeamsOdds[homeTeam] = newTeamsOdds[homeTeam] || [];
         newTeamsOdds[awayTeam] = newTeamsOdds[awayTeam] || [];
 
+        const gameCommenceTime = new Date(game.commence_time);
+        
+        const timeDifference = gameCommenceTime - firstWeekTime;
+        const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+        const weekNumber = Math.floor(daysDifference / 7) + 1;
+
         game.bookmakers.forEach(bookmaker => {
           const spreadMarket = bookmaker.markets.find(market => market.key === 'spreads');
           if (spreadMarket) {
             const homeOdds = spreadMarket.outcomes.find(outcome => outcome.name === homeTeam);
             const awayOdds = spreadMarket.outcomes.find(outcome => outcome.name === awayTeam);
 
+            // Insert BYE week if needed
+            for (let i = newTeamsOdds[homeTeam].length; i < weekNumber - 1; i++) {
+              newTeamsOdds[homeTeam].push({ opponent: "BYE", week: i + 1 });
+            }
+            for (let i = newTeamsOdds[awayTeam].length; i < weekNumber - 1; i++) {
+              newTeamsOdds[awayTeam].push({ opponent: "BYE", week: i + 1 });
+            }
+
             if (homeOdds) {
-              newTeamsOdds[homeTeam].push({ opponent: awayTeam, odds: homeOdds.price, point: homeOdds.point });
+              newTeamsOdds[homeTeam].push({ opponent: awayTeam, odds: homeOdds.price, point: homeOdds.point, week: weekNumber });
             }
             if (awayOdds) {
-              newTeamsOdds[awayTeam].push({ opponent: homeTeam, odds: awayOdds.price, point: awayOdds.point });
+              newTeamsOdds[awayTeam].push({ opponent: homeTeam, odds: awayOdds.price, point: awayOdds.point, week: weekNumber });
             }
           }
         });
@@ -88,22 +104,20 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(teamsOdds).map(teamName => (
-              <tr key={teamName}>
-                <th>{teamAbbreviations[teamName]}</th>
-                {teamsOdds[teamName].map((odds, index) => (
-                  <td key={index}>
-                    {odds && (
-                      <div className="game-box">
-                        <p>{teamAbbreviations[odds.opponent]}</p>
-                        <p>{odds.odds}</p>
-                        {/* Add onClick handler here */}
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))}
+          {Object.keys(teamsOdds).map(teamName => (
+          <tr key={teamName}>
+            <th>{teamAbbreviations[teamName]}</th>
+            {teamsOdds[teamName].map((odds, index) => (
+            <td key={index}>
+              {odds && (
+              <div className="game-box">
+                <p>{teamAbbreviations[odds.opponent]}</p>
+                <p>{odds.point}</p>
+                {/* Add onClick handler here */}
+              </div>)}
+            </td>))}
+          </tr>
+          ))}
           </tbody>
         </table>
       )}
