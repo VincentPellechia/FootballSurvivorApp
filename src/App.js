@@ -23,12 +23,25 @@ const cacheOddsData = data => {
 
 function App() {
   const [oddsData, setOddsData] = useState(getCachedOddsData());
+  const [teamsOdds, setTeamsOdds] = useState({});
+  const weekCount = 18;
+  const [selectedCells, setSelectedCells] = useState([]);
+  const [bestTeams, setBestTeams] = useState([]);
 
   const fetchAndCacheData = async () => {
     const data = await fetchOddsData();
     setOddsData(data);
     cacheOddsData(data);
   };
+
+  const toggleSelectedCell = (index) => {
+    if (selectedCells.includes(index)) {
+      setSelectedCells(selectedCells.filter((cellIndex) => cellIndex !== index));
+    } else {
+      setSelectedCells([...selectedCells, index]);
+    }
+  };
+
   const teamAbbreviations = {
     "Arizona Cardinals": "ARI","Atlanta Falcons": "ATL","Chicago Bears":"CHI","Detroit Lions":"DET","Washington Commanders":"WAS",
     "Kansas City Chiefs":"KC","Carolina Panthers":"CAR","Baltimore Ravens":"BAL","Houston Texans":"HOU","Green Bay Packers":"GB",
@@ -54,8 +67,7 @@ function App() {
     return `rgb(${red}, ${green}, ${blue})`;
   };
 
-  const [teamsOdds, setTeamsOdds] = useState({});
-  const weekCount = 18;
+  
   
   useEffect(() => {
     if (oddsData) {
@@ -91,10 +103,10 @@ function App() {
             }
 
             if (homeOdds) {
-              newTeamsOdds[homeTeam].push({ opponent: awayTeam, odds: homeOdds.price, point: homeOdds.point, week: weekNumber });
+              newTeamsOdds[homeTeam].push({ opponent: awayTeam, point: homeOdds.point, week: weekNumber });
             }
             if (awayOdds) {
-              newTeamsOdds[awayTeam].push({ opponent: homeTeam, odds: awayOdds.price, point: awayOdds.point, week: weekNumber });
+              newTeamsOdds[awayTeam].push({ opponent: homeTeam, point: awayOdds.point, week: weekNumber });
             }
           }
         });
@@ -103,6 +115,41 @@ function App() {
       setTeamsOdds(newTeamsOdds); // Update teamsOdds state
     }
   }, [oddsData]);
+
+  useEffect(() => {
+
+    if (Object.keys(teamsOdds).length === 0) {
+      return; // Return early if teamsOdds is empty
+    }
+    if (teamsOdds) {
+      const pickBestTeam = () => {
+        console.log(teamsOdds)
+        const availableTeams = Object.keys(teamsOdds); // List of teams available to pick
+        const pickedTeams = []; // Teams that have been picked
+      
+        for (let week = 1; week <= weekCount; week++) {
+          // Calculate scores for available teams based on odds.points
+          const scores = {};
+          availableTeams.forEach(teamName => {
+            const teamWeekOdds = teamsOdds[teamName].find(odds => odds.week === week);
+            scores[teamName] = teamWeekOdds ? teamWeekOdds.point : Infinity;
+          });
+      
+          // Pick the team with the lowest score for the current week
+          const bestTeam = availableTeams.reduce((best, current) => {
+            return scores[current] < scores[best] ? current : best;
+          });
+      
+          // Update pickedTeams and availableTeams
+          pickedTeams.push(bestTeam);
+          availableTeams.splice(availableTeams.indexOf(bestTeam), 1);
+        }
+      
+        return pickedTeams;
+      };
+      setBestTeams(pickBestTeam());
+    }
+  }, [teamsOdds]);
 
   return (
     <div className="App">
@@ -123,7 +170,11 @@ function App() {
           <tr key={teamName}>
             <th>{teamAbbreviations[teamName]}</th>
             {teamsOdds[teamName].map((odds, index) => (
-            <td key={index}>
+            <td 
+            key={index}
+            onClick={()=> toggleSelectedCell(index)}
+            className={selectedCells.includes(index) ? "selected-cell" : ""}
+            >
               {odds && (
               <div className="game-box" style={{ backgroundColor: calculateColorValue(odds.point) }}>
                 <p>{teamAbbreviations[odds.opponent]}</p>
@@ -136,6 +187,7 @@ function App() {
           </tbody>
         </table>
       )}
+      {bestTeams && (<div>{bestTeams}</div>)}
     </div>
   );
 }

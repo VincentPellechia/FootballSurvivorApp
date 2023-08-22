@@ -40,3 +40,14 @@
 .game-box:hover {
   background-color: #f0f0f0;
 }
+
+.selected-cell {
+  cursor: default;
+  pointer-events: none;
+}
+
+.selected {
+  border: 2px solid #007bff;
+  border-radius: 50%;
+  padding: 4px;
+}
