@@ -1,38 +1,42 @@
 .App {
   text-align: center;
+  padding: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.team-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.team-table th,
+.team-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.team-table th {
+  background-color: #f0f0f0;
+}
+
+.game-box {
+  padding: 5px;
+  border: 1px solid #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Optional: Center the table horizontally */
+.team-list {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.game-box:hover {
+  background-color: #f0f0f0;
 }
