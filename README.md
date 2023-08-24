@@ -26,9 +26,9 @@ To run this project locally, follow these steps:
 
 1. Click the "Fetch and Cache Odds" button to fetch and cache the latest NFL odds data from the Odds API.
 2. Once the data is fetched, the table will display odds information for each team and each week.
-3. Cells are color-coded based on odds.points, with lower values appearing green and higher values appearing red.
+3. Cells are color-coded based on points, with lower values appearing green and higher values appearing red.
 4. Click on a cell to select it. The selected cell will be highlighted, and the rest of the row will be unclickable.
-5. The algorithm automatically selects the best team for each week based on odds.points. The picked teams are displayed in the console.
+5. The algorithm automatically selects the best team for each week based on points. The picked teams are displayed in the console.
 
 ## Technologies Used
 
