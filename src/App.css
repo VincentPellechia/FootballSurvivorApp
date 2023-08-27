@@ -12,8 +12,9 @@
 .team-table th,
 .team-table td {
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 3px;
   text-align: center;
+  font-size: 12px;
 }
 
 .team-table th {
@@ -36,7 +37,16 @@
   justify-content: center;
 }
 
+.team-table td .game-box {
+  padding: 2px; /* Adjust this value to control the vertical padding inside game-box */
+}
 
 .game-box:hover {
   background-color: #f0f0f0;
+}
+
+span {
+  font-size: 7px;
+  display: block;
+  float: right;
 }

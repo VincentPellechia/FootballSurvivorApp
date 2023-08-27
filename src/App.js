@@ -73,6 +73,7 @@ function App() {
     }
     if (teamsOdds) {
       const pickBestTeam = () => {
+        
         const availableTeams = Object.keys(teamsOdds); // List of teams available to pick
         const pickedTeams = []; // Teams that have been picked
       
@@ -150,6 +151,8 @@ function App() {
     <div className="App">
       <h1>NFL Odds</h1>
       <button onClick={fetchAndCacheData}>Fetch and Cache Odds</button>
+      <button onClick={calculateBestPicks}>Calculate Best Picks</button>
+      {bestTeams && (<div>{bestTeams}</div>)}
       {oddsData && (
         <table className="team-table">
           <thead>
@@ -172,8 +175,8 @@ function App() {
             >
               {odds && (
               <div className="game-box" style={{ backgroundColor: calculateColorValue(odds.point) }}>
-                <p>{teamAbbreviations[odds.opponent]}</p>
-                <p>{odds.point}</p>
+                {teamAbbreviations[odds.opponent]}
+                <span>{odds.point}</span>
                 {/* Add onClick handler here */}
               </div>)}
             </td>))}
@@ -182,8 +185,7 @@ function App() {
           </tbody>
         </table>
       )}
-      <button onClick={calculateBestPicks}>Calculate</button>
-      {bestTeams && (<div>{bestTeams}</div>)}
+      
     </div>
   );
 }
