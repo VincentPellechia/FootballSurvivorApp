@@ -49,7 +49,7 @@ function App() {
     "San Francisco 49ers":"SF","Indianapolis Colts":"IND","Jacksonville Jaguars":"JAX","New Orleans Saints":"NO","Tennessee Titans":"TEN",
     "Seattle Seahawks":"SEA","Los Angeles Rams":"LA","Denver Broncos":"DEN","Las Vegas Raiders":"LV","Los Angeles Chargers":"LAC",
     "Miami Dolphins":"MIA","New England Patriots":"NE","Philadelphia Eagles":"PHI","New York Giants":"NYG","Dallas Cowboys":"DAL",
-    "New York Jets":"NYJ","Buffalo Bills":"Buf","BYE":"BYE"
+    "New York Jets":"NYJ","Buffalo Bills":"BUF","BYE":"BYE"
   };
 
   const calculateColorValue = point => {
@@ -67,12 +67,43 @@ function App() {
     return `rgb(${red}, ${green}, ${blue})`;
   };
 
-  
+  const calculateBestPicks = () => {
+    if (Object.keys(teamsOdds).length === 0) {
+      return; // Return early if teamsOdds is empty
+    }
+    if (teamsOdds) {
+      const pickBestTeam = () => {
+        const availableTeams = Object.keys(teamsOdds); // List of teams available to pick
+        const pickedTeams = []; // Teams that have been picked
+      
+        for (let week = 1; week <= weekCount; week++) {
+          // Calculate scores for available teams based on odds.points
+          const scores = {};
+          availableTeams.forEach(teamName => {
+            const teamWeekOdds = teamsOdds[teamName].find(odds => odds.week === week);
+            scores[teamName] = teamWeekOdds ? teamWeekOdds.point : Infinity;
+          });
+      
+          // Pick the team with the lowest score for the current week
+          const bestTeam = availableTeams.reduce((best, current) => {
+            return scores[current] < scores[best] ? current : best;
+          });
+      
+          // Update pickedTeams and availableTeams
+          pickedTeams.push(teamAbbreviations[bestTeam]);
+          console.log(pickedTeams);
+          availableTeams.splice(availableTeams.indexOf(bestTeam), 1);
+        }
+      
+        return pickedTeams.join(', ');
+      };
+      setBestTeams(pickBestTeam());
+    }
+  }
   
   useEffect(() => {
     if (oddsData) {
       const newTeamsOdds = {}; // Create a new object to store the teams odds
-      console.log(oddsData[0].commence_time)
       const firstWeekTime = new Date("2023-09-07T00:21:00Z");
 
       oddsData.forEach(game => {
@@ -116,41 +147,6 @@ function App() {
     }
   }, [oddsData]);
 
-  useEffect(() => {
-
-    if (Object.keys(teamsOdds).length === 0) {
-      return; // Return early if teamsOdds is empty
-    }
-    if (teamsOdds) {
-      const pickBestTeam = () => {
-        console.log(teamsOdds)
-        const availableTeams = Object.keys(teamsOdds); // List of teams available to pick
-        const pickedTeams = []; // Teams that have been picked
-      
-        for (let week = 1; week <= weekCount; week++) {
-          // Calculate scores for available teams based on odds.points
-          const scores = {};
-          availableTeams.forEach(teamName => {
-            const teamWeekOdds = teamsOdds[teamName].find(odds => odds.week === week);
-            scores[teamName] = teamWeekOdds ? teamWeekOdds.point : Infinity;
-          });
-      
-          // Pick the team with the lowest score for the current week
-          const bestTeam = availableTeams.reduce((best, current) => {
-            return scores[current] < scores[best] ? current : best;
-          });
-      
-          // Update pickedTeams and availableTeams
-          pickedTeams.push(bestTeam);
-          availableTeams.splice(availableTeams.indexOf(bestTeam), 1);
-        }
-      
-        return pickedTeams;
-      };
-      setBestTeams(pickBestTeam());
-    }
-  }, [teamsOdds]);
-
   return (
     <div className="App">
       <h1>NFL Odds</h1>
@@ -187,6 +183,7 @@ function App() {
           </tbody>
         </table>
       )}
+      <button onClick={calculateBestPicks}>Calculate</button>
       {bestTeams && (<div>{bestTeams}</div>)}
     </div>
   );
