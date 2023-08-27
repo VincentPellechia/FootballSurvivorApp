@@ -91,7 +91,6 @@ function App() {
       
           // Update pickedTeams and availableTeams
           pickedTeams.push(teamAbbreviations[bestTeam]);
-          console.log(pickedTeams);
           availableTeams.splice(availableTeams.indexOf(bestTeam), 1);
         }
       
