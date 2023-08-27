@@ -39,12 +39,8 @@ To run this project locally, follow these steps:
 
 ## Credits
 
-- NFL Odds Analysis Tool was developed by [Your Name].
+- NFL Odds Analysis Tool was developed by Vincent Pellechia.
 - Data is fetched from the Odds API (https://api.the-odds-api.com/).
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ---
 
